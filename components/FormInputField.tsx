@@ -15,7 +15,7 @@ export default function FormInputField({
       <input
         type={type}
         placeholder={placeholder}
-        className="block border mt-1 text-black px-2 w-64 rounded-md focus:outline-none focus:border-amber-500"
+        className="block border mt-1 text-black px-2 py-1 w-64 rounded-md focus:outline-none focus:border-amber-500"
       />
     </label>
   );
