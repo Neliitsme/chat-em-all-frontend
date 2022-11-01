@@ -6,7 +6,7 @@ interface PillButtonProps {
 export default function PillButton({ text, clickFn }: PillButtonProps) {
   return (
     <button
-      className="rounded-full bg-amber-500 hover:bg-amber-600 text-black py-2 px-10"
+      className="rounded-full drop-shadow-md bg-amber-500 hover:bg-amber-600 text-black py-2 px-10"
       onClick={clickFn}
     >
       {text}

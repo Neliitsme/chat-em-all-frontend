@@ -20,7 +20,7 @@ export default function Message({ props }: MessageProps) {
   }
 
   return (
-    <div className={`m-4 p-2 self-start rounded-md ${isMyMessage()}`}>
+    <div className={`m-4 p-2 self-start rounded-md drop-shadow-md ${isMyMessage()}`}>
       <p className="max-w-sm whitespace-normal break-words">
         {props.content}
       </p>

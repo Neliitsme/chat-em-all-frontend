@@ -13,7 +13,7 @@ export default function SignIn() {
   return (
     <div className="flex h-screen place-content-center">
       <form
-        className="border rounded-lg flex flex-col p-12 place-self-center place-items-center place-content-center space-y-4"
+        className="border drop-shadow-md rounded-lg flex flex-col p-12 place-self-center place-items-center place-content-center space-y-4"
         action=""
       >
         <h1 className="">Sign in to</h1>

@@ -23,7 +23,7 @@ export default function Chat({ props }: ChatProps) {
 
   return (
     <div>
-      <div className="fixed p-2 top-0 inset-x-0 bg-zinc-800 z-10">
+      <div className="fixed p-2 top-0 inset-x-0 bg-zinc-800 z-10 drop-shadow-md">
         <div className="flex h-12">
           <Link href={"/"} className="flex my-3">
             <HiArrowLeft size={24} />
