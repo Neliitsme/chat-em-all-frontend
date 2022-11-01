@@ -1,9 +1,13 @@
 import Link from "next/link";
 import FormInputField from "../components/FormInputField";
 import PillButton from "../components/PillButton";
+import { useRouter } from "next/router";
 
 export default function SignIn() {
+  const router = useRouter();
+
   function toggleMethod() {}
+
   function handleSignIn() {}
 
   return (
@@ -24,7 +28,9 @@ export default function SignIn() {
           type="password"
           placeholder="*******"
         />
-        <PillButton text={"Sign in"} onClick={handleSignIn} />
+        <Link href="/">
+          <PillButton text={"Sign in"} clickFn={handleSignIn} />
+        </Link>
         <p className="">
           Or{" "}
           <Link href="/signup" className="text-amber-500 hover:text-amber-600">

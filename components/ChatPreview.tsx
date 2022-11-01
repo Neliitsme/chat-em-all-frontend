@@ -28,7 +28,7 @@ export default function ChatPreview({
         </div>
         <div className="mx-2 w-4/5">
           <p className="font-bold text-lg">{username}</p>
-          <p className="whitespace-normal line-clamp-2 text-zinc-300">
+          <p className="whitespace-normal break-words line-clamp-2 text-zinc-300">
             {latestMessage}
           </p>
         </div>

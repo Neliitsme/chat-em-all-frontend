@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import FormInputField from "../components/FormInputField";
 import PillButton from "../components/PillButton";
 
 export default function SignUp() {
+  const router = useRouter();
   function handleSignUp() {}
   return (
     <div className="flex h-screen place-content-center">
@@ -27,7 +29,9 @@ export default function SignUp() {
           type="password"
           placeholder="*******"
         />
-        <PillButton text={"Sign up"} onClick={handleSignUp} />
+        <Link href="/">
+          <PillButton text={"Sign up"} clickFn={handleSignUp} />
+        </Link>
         <p className="">
           Or{" "}
           <Link href="/signin" className="text-amber-500 hover:text-amber-600">
