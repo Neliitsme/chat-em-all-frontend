@@ -1,10 +1,14 @@
 import { HiLogout } from "react-icons/hi";
 import { useRouter } from "next/router";
+import Cookies from "universal-cookie";
 
 export default function NavMenu() {
   const router = useRouter();
 
   function handleExit() {
+    const cookies = new Cookies();
+    cookies.remove("access_token", { path: "/" });
+    cookies.remove("access_token_type", { path: "/" });
     router.push("/signin");
   }
 

@@ -1,47 +1,159 @@
-import Head from "next/head";
-import { AnimatePresence, motion } from "framer-motion";
 import ChatPreview from "../components/ChatPreview";
 import SearchBar from "../components/SearchBar";
+import axios from "axios";
+import Cookies from "universal-cookie";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Search from "./search";
+import Chat from "./chat";
+
+interface ChatPreviewResponseBody {
+  id: string;
+  name: string;
+  users_ids: string[];
+  messages: [{ text: string; owner_id: string }];
+}
+
+export interface ChatPreviewBody {
+  id: string;
+  avatar: string;
+  username: string;
+  user_id: string;
+  latestMessage: string;
+}
+
+export interface FoundUser {
+  id: string;
+  username: string;
+  email: string;
+}
+
+export interface Me {
+  id: string;
+  username: string;
+  email: string;
+}
 
 export default function Home() {
-  function handleOpenChat() {}
+  const router = useRouter();
+  const [chatPreviews, setChatPreviews] = useState<ChatPreviewBody[]>([]);
+  const [activePage, setActivePage] = useState("main"); // main, search, chat, settings
+  const [foundUser, setFoundUser] = useState<FoundUser[]>([]);
+  const [activeChat, setActiveChat] = useState<ChatPreviewBody | null>(null);
+  const [me, setMe] = useState<Me>({ id: "", username: "", email: "" });
+  const [isSearching, setIsSearching] = useState(false);
 
-  const openChats = [
-    {
-      id: "1",
-      avatar: "/avatar.jpg",
-      username: "vaditel",
-      latestMessage:
-        "I ain't never seen no mustard on that, but it might be good though, my dad would know better, boutta get him. Aww, mustard! Come on man, now don't put no mustard on that, you need to put a little season on that thing! WHAT! Man come on get that pepper off there! Come on, somebody come get this man! Come on now, come on get that pepper of there, that's just too much doggone pepper. I don't wanna see this no more!",
-    },
-    {
-      id: "2",
-      avatar: "/avatar.jpg",
-      username: "neli",
-      latestMessage: "Ayo",
-    },
-    {
-      id: "3",
-      avatar: "/avatar.jpg",
-      username: "muza",
-      latestMessage: "Wank wank wank",
-    },
-  ];
+  useEffect(() => {
+    const cookies = new Cookies();
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/users/me`, {
+        headers: {
+          Authorization: `Bearer ${cookies.get("access_token")}`,
+        },
+      })
+      .then((res) => {
+        setMe(res.data);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          router.push("/signin");
+        }
+        console.log(err);
+      });
 
-  const listPreviews = openChats.map((preview) => (
-    <ChatPreview
-      key={preview.id}
-      id={preview.id}
-      avatar={preview.avatar}
-      username={preview.username}
-      latestMessage={preview.latestMessage}
-    />
-  ));
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_chats`, {
+        headers: {
+          Authorization: `Bearer ${cookies.get("access_token")}`,
+        },
+      })
+      .then((res) => {
+        const openChats: ChatPreviewBody[] = [];
+
+        res.data.forEach((chat: ChatPreviewResponseBody) => {
+          openChats.push({
+            id: chat.id,
+            avatar: "/avatar.jpg",
+            username: chat.name,
+            user_id: chat.users_ids[0],
+            latestMessage: chat.messages[0].text,
+          });
+        });
+
+        setChatPreviews([...openChats]);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          router.push("/signin");
+        }
+        console.log(err);
+      });
+  }, [router]);
+
+  function handleOpenChat(chatPreview: ChatPreviewBody) {
+    console.log("open chat");
+    setActiveChat(chatPreview);
+    setActivePage("chat");
+  }
+
+  function displayChats() {
+    return chatPreviews.map((chatPreview) => {
+      return (
+        <a
+          key={chatPreview.id}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            handleOpenChat(chatPreview);
+          }}
+        >
+          <ChatPreview chatPreviewBody={chatPreview} />
+        </a>
+      );
+    });
+  }
 
   return (
     <div>
-      <SearchBar isSearching={false} />
-      <ul className="h-screen flex-col">{listPreviews}</ul>
+      {activePage === "main" && (
+        <>
+          {" "}
+          <SearchBar
+            activePage={activePage}
+            setActivePage={setActivePage}
+            foundUser={foundUser}
+            setFoundUser={setFoundUser}
+            isSearching={isSearching}
+            setIsSearching={setIsSearching}
+          />
+          <ul className="h-screen flex-col">{displayChats()}</ul>
+        </>
+      )}
+      {activePage === "search" && (
+        <>
+          {" "}
+          <SearchBar
+            activePage={activePage}
+            setActivePage={setActivePage}
+            foundUser={foundUser}
+            setFoundUser={setFoundUser}
+            isSearching={isSearching}
+            setIsSearching={setIsSearching}
+          />
+          <Search foundUser={foundUser} setFoundUser={setFoundUser} />
+        </>
+      )}
+      {activePage === "chat" && (
+        <>
+          <Chat
+            activeChat={activeChat}
+            setActiveChat={setActiveChat}
+            activePage={activePage}
+            setActivePage={setActivePage}
+            me={me}
+          />
+        </>
+      )}
     </div>
   );
 }

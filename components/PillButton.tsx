@@ -1,13 +1,12 @@
 interface PillButtonProps {
   text: string;
-  clickFn: () => void;
 }
 
-export default function PillButton({ text, clickFn }: PillButtonProps) {
+export default function PillButton({ text }: PillButtonProps) {
   return (
     <button
       className="rounded-full drop-shadow-md bg-amber-500 hover:bg-amber-600 text-black py-2 px-10"
-      onClick={clickFn}
+      onClick={(e) => e.preventDefault()}
     >
       {text}
     </button>
