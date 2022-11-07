@@ -15,8 +15,6 @@ interface SearchBarProps {
   setActivePage: Dispatch<SetStateAction<string>>;
   foundUser: FoundUser[];
   setFoundUser: Dispatch<SetStateAction<FoundUser[]>>;
-  isSearching: boolean;
-  setIsSearching: Dispatch<SetStateAction<boolean>>;
 }
 
 // TODO: Open chats from search page
@@ -25,11 +23,10 @@ export default function SearchBar({
   setActivePage,
   foundUser,
   setFoundUser,
-  isSearching,
-  setIsSearching,
 }: SearchBarProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   function handleSearch() {
     if (activePage !== "search" && search.trim() !== "") {

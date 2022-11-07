@@ -41,7 +41,6 @@ export default function Home() {
   const [foundUser, setFoundUser] = useState<FoundUser[]>([]);
   const [activeChat, setActiveChat] = useState<ChatPreviewBody | null>(null);
   const [me, setMe] = useState<Me>({ id: "", username: "", email: "" });
-  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const cookies = new Cookies();
@@ -114,46 +113,30 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <>
+      {(activePage === "main" || activePage === "search") && (
+        <SearchBar
+          activePage={activePage}
+          setActivePage={setActivePage}
+          foundUser={foundUser}
+          setFoundUser={setFoundUser}
+        />
+      )}
       {activePage === "main" && (
-        <>
-          {" "}
-          <SearchBar
-            activePage={activePage}
-            setActivePage={setActivePage}
-            foundUser={foundUser}
-            setFoundUser={setFoundUser}
-            isSearching={isSearching}
-            setIsSearching={setIsSearching}
-          />
-          <ul className="h-screen flex-col">{displayChats()}</ul>
-        </>
+        <ul className="h-screen flex-col">{displayChats()}</ul>
       )}
       {activePage === "search" && (
-        <>
-          {" "}
-          <SearchBar
-            activePage={activePage}
-            setActivePage={setActivePage}
-            foundUser={foundUser}
-            setFoundUser={setFoundUser}
-            isSearching={isSearching}
-            setIsSearching={setIsSearching}
-          />
-          <Search foundUser={foundUser} setFoundUser={setFoundUser} />
-        </>
+        <Search foundUser={foundUser} setFoundUser={setFoundUser} />
       )}
       {activePage === "chat" && (
-        <>
-          <Chat
-            activeChat={activeChat}
-            setActiveChat={setActiveChat}
-            activePage={activePage}
-            setActivePage={setActivePage}
-            me={me}
-          />
-        </>
+        <Chat
+          activeChat={activeChat}
+          setActiveChat={setActiveChat}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          me={me}
+        />
       )}
-    </div>
+    </>
   );
 }
