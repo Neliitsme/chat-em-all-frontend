@@ -34,6 +34,9 @@ export default function SearchBar({
       setActivePage("search");
       setIsSearching(true);
     }
+    if (search.trim() === "") {
+      return;
+    }
 
     axios
       .post(

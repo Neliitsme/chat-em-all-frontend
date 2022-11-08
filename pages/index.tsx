@@ -128,7 +128,14 @@ export default function Home() {
         <ul className="h-screen flex-col">{displayChats()}</ul>
       )}
       {activePage === "search" && (
-        <Search foundUser={foundUser} setFoundUser={setFoundUser} />
+        <Search
+          foundUser={foundUser}
+          setFoundUser={setFoundUser}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          activeChat={activeChat}
+          setActiveChat={setActiveChat}
+        />
       )}
       {activePage === "chat" && (
         <Chat
