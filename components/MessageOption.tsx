@@ -1,12 +1,12 @@
 interface MessageOptionProps {
-  emotion: string;
-  message: string;
+  face: string;
+  text: string;
   blurred?: boolean;
 }
 
 export default function MessageOption({
-  emotion,
-  message,
+  face,
+  text,
   blurred,
 }: MessageOptionProps) {
   return (
@@ -17,10 +17,10 @@ export default function MessageOption({
             blurred && "blur-md"
           }`}
         >
-          {message}
+          {text}
         </p>
       </div>
-      <p className="text-center text-2xl">{emotion}</p>
+      <p className="text-center text-2xl">{face}</p>
     </div>
   );
 }

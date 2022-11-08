@@ -19,15 +19,10 @@ import { useRouter } from "next/router";
 import removeCookies from "../utils/removeCookies";
 
 export interface ChatMessagesResponseBody {
-  messages: [
-    {
-      // TODO: would be nice to have
-      // id: string;
-      // date: string;
-      text: string;
-      owner_id: string;
-    }
-  ];
+  id: string;
+  text: string;
+  owner_id: string;
+  created: string;
 }
 
 interface ChatProps {
@@ -38,6 +33,11 @@ interface ChatProps {
   me: Me;
 }
 
+interface MessageOptionsResponseBody {
+  face: string;
+  text: string;
+}
+
 export default function Chat({
   activeChat,
   setActiveChat,
@@ -46,17 +46,22 @@ export default function Chat({
   me,
 }: ChatProps) {
   const router = useRouter();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<ChatMessagesResponseBody[]>([]);
+  const [messageOptions, setMessageOptions] = useState<
+    MessageOptionsResponseBody[]
+  >([]);
+  const cookies = new Cookies();
 
   const bottomRef = useRef<null | HTMLDivElement>(null);
   useEffect(() => {
+    const hookCookies = new Cookies();
     axios
       .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_history`, {
         params: {
           chat_id: activeChat?.id,
         },
         headers: {
-          Authorization: `Bearer ${new Cookies().get("access_token")}`,
+          Authorization: `Bearer ${hookCookies.get("access_token")}`,
         },
       })
       .then((res) => {
@@ -70,8 +75,44 @@ export default function Chat({
         console.log(err);
       });
 
-    bottomRef.current?.scrollIntoView();
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_options`, {
+        params: { chat_id: activeChat?.id },
+        headers: {
+          Authorization: `Bearer ${hookCookies.get("access_token")}`,
+        },
+      })
+      .then((res) => {
+        setMessageOptions(res.data);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          removeCookies();
+          router.push("/signin");
+        }
+        console.log(err);
+      });
   }, [activeChat?.id, router]);
+
+  function handleUpdateMessageOptions() {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_options`, {
+        params: { chat_id: activeChat?.id },
+        headers: {
+          Authorization: `Bearer ${cookies.get("access_token")}`,
+        },
+      })
+      .then((res) => {
+        setMessageOptions(res.data);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          removeCookies();
+          router.push("/signin");
+        }
+        console.log(err);
+      });
+  }
 
   function handleCloseChat() {
     setActivePage("main");
@@ -80,7 +121,56 @@ export default function Chat({
 
   function displayMessages() {
     return messages.map((message) => {
-      return <Message props={message} me={me} />;
+      return <Message key={message.id} props={message} me={me} />;
+    });
+  }
+
+  function handleSendMessage(message: MessageOptionsResponseBody) {
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_API_HOST}/api/chats/send_message`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${cookies.get("access_token")}`,
+          },
+          params: {
+            chat_id: activeChat?.id,
+            face: message.face,
+          },
+        }
+      )
+      .then((res) => {
+        setMessages([...messages, res.data]);
+        handleUpdateMessageOptions();
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          removeCookies();
+          router.push("/signin");
+        }
+        console.log(err);
+      });
+  }
+
+  function displayMessageOptions() {
+    return messageOptions.map((option) => {
+      return (
+        <a
+          key={option.face}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            option.face !== "💸" && handleSendMessage(option);
+          }}
+        >
+          <MessageOption
+            face={option.face}
+            text={option.text}
+            blurred={option.face === "💸"}
+          />
+        </a>
+      );
     });
   }
 
@@ -116,20 +206,7 @@ export default function Chat({
       </div>
 
       <div className="flex fixed bottom-0 inset-x-0 h-48 gap-4 px-2 py-2 items-end overflow-x-scroll z-10">
-        <MessageOption
-          emotion="😀"
-          message="My name is Yoshikage Kira. I'm 33 years old. My house is in the northeast section of Morioh, where all the villas are, and I am not married."
-        />
-        <MessageOption emotion="🫤" message="Hello stranger" />
-        <MessageOption
-          emotion="😶"
-          message="Stop! You have violated the Law! Pay the court a fine or serve your sentance. Your stolen goods are now forfeit"
-        />
-        <MessageOption
-          emotion="😎"
-          message="im swaggin im cool wassup"
-          blurred
-        />
+        {displayMessageOptions()}
       </div>
 
       {/* <form className="flex p-2 py-4 bg-zinc-800 fixed bottom-0 inset-x-0 z-10">

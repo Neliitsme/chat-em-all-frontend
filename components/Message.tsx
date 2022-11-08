@@ -2,16 +2,16 @@ import { Me } from "../pages";
 
 interface MessageProps {
   props: {
-    // id: string;
-    // date: string;
+    id: string;
     text: string;
     owner_id: string;
+    created: string;
   };
   me: Me;
 }
 
 export default function Message({ props, me }: MessageProps) {
-  const date = new Date().toLocaleString("ru-RU", {
+  const date = new Date(props.created).toLocaleString("ru-RU", {
     timeZone: "Europe/Moscow",
   });
 

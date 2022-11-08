@@ -77,7 +77,7 @@ export default function Home() {
             avatar: "/avatar.jpg",
             username: chat.name,
             user_id: chat.users_ids[0],
-            latestMessage: chat.messages[0].text,
+            latestMessage: chat.messages[chat.messages.length - 1].text,
           });
         });
 
@@ -93,7 +93,6 @@ export default function Home() {
   }, [router]);
 
   function handleOpenChat(chatPreview: ChatPreviewBody) {
-    console.log("open chat");
     setActiveChat(chatPreview);
     setActivePage("chat");
   }
