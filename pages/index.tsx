@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Search from "./search";
 import Chat from "./chat";
+import removeCookies from "../utils/removeCookies";
 
 interface ChatPreviewResponseBody {
   id: string;
@@ -54,7 +55,8 @@ export default function Home() {
         setMe(res.data);
       })
       .catch((err) => {
-        if (err?.response?.status === 401) {
+        if (err.response?.status === 401) {
+          removeCookies();
           router.push("/signin");
         }
         console.log(err);
@@ -82,7 +84,8 @@ export default function Home() {
         setChatPreviews([...openChats]);
       })
       .catch((err) => {
-        if (err?.response?.status === 401) {
+        if (err.response?.status === 401) {
+          removeCookies();
           router.push("/signin");
         }
         console.log(err);

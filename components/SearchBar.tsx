@@ -9,6 +9,7 @@ import MenuButton from "./MenuButton";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { FoundUser } from "../pages";
+import removeCookies from "../utils/removeCookies";
 
 interface SearchBarProps {
   activePage: string;
@@ -51,7 +52,8 @@ export default function SearchBar({
         setFoundUser(res.data);
       })
       .catch((err) => {
-        if (err?.response?.status === 401) {
+        if (err.response?.status === 401) {
+          removeCookies();
           router.push("/signin");
         }
         console.log(err);

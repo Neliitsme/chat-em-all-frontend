@@ -7,6 +7,7 @@ import ErrorBadge from "../components/ErrorBadge";
 import axios from "axios";
 import querystring from "querystring";
 import Cookies from "universal-cookie";
+import setCookies from "../utils/setCookies";
 
 export default function SignIn() {
   const [password, setPassword] = useState("");
@@ -33,7 +34,7 @@ export default function SignIn() {
         querystring.stringify({ username: username.trim(), password: password })
       )
       .then((res) => {
-        cookies.set("access_token", res.data.access_token, { path: "/" });
+        setCookies(res.data);
         router.push("/");
       })
       .catch((err) => {

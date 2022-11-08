@@ -16,6 +16,7 @@ import { ChatPreviewBody, Me } from ".";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
+import removeCookies from "../utils/removeCookies";
 
 export interface ChatMessagesResponseBody {
   messages: [
@@ -63,8 +64,10 @@ export default function Chat({
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
+          removeCookies();
           router.push("/signin");
         }
+        console.log(err);
       });
 
     bottomRef.current?.scrollIntoView();
