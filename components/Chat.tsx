@@ -10,9 +10,9 @@ import {
   useRef,
   useState,
 } from "react";
-import MessageOption from "../components/MessageOption";
-import Message from "../components/Message";
-import { ChatPreviewBody, Me } from ".";
+import MessageOption from "./MessageOption";
+import Message from "./Message";
+import { ChatPreviewBody, Me } from "../pages";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";

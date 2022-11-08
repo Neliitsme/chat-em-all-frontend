@@ -3,8 +3,8 @@ import Link from "next/link";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { HiArrowUp } from "react-icons/hi";
 import Image from "next/image";
-import SearchBar from "../components/SearchBar";
-import { FoundUser } from ".";
+import SearchBar from "./SearchBar";
+import { FoundUser } from "../pages";
 import { Dispatch, SetStateAction } from "react";
 
 interface SearchProps {

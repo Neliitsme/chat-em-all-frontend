@@ -4,8 +4,8 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Search from "./search";
-import Chat from "./chat";
+import Search from "../components/Search";
+import Chat from "../components/Chat";
 import removeCookies from "../utils/removeCookies";
 
 interface ChatPreviewResponseBody {
