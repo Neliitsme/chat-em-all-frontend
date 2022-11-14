@@ -17,7 +17,7 @@ import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
 import removeCookies from "../utils/removeCookies";
 
-export interface ChatMessagesResponseBody {
+export interface ChatMessageResponseBody {
   id: string;
   text: string;
   owner_id: string;
@@ -45,7 +45,7 @@ export default function Chat({
   me,
 }: ChatProps) {
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatMessagesResponseBody[]>([]);
+  const [messages, setMessages] = useState<ChatMessageResponseBody[]>([]);
   const [messageOptions, setMessageOptions] = useState<
     MessageOptionsResponseBody[]
   >([]);
@@ -115,6 +115,13 @@ export default function Chat({
       });
   }, [activeChat?.id, router]);
 
+  const handlePlayNotification = useCallback(() => {
+    const audio = new Audio("/message-notification.m4a");
+    audio.volume = 0.4;
+    audio.play();
+    console.log("playing sound");
+  }, []);
+
   useEffect(() => {
     const socket = new WebSocket(
       `wss://${process.env.NEXT_PUBLIC_API_HOSTNAME}/api/ws/${new Cookies().get(
@@ -126,10 +133,11 @@ export default function Chat({
     };
 
     socket.onmessage = (e) => {
-      setMessages((m) => [...m, JSON.parse(JSON.parse(e.data))]);
-      const audio = new Audio("/message-notification.m4a");
-      audio.volume = 0.4;
-      audio.play();
+      const data: ChatMessageResponseBody = JSON.parse(JSON.parse(e.data));
+      if (data.owner_id !== me.id) {
+        handlePlayNotification();
+      }
+      setMessages((m) => [...m, data]);
       bottomRef.current?.scrollIntoView();
       handleUpdateMessageOptions();
     };
@@ -139,7 +147,7 @@ export default function Chat({
     return () => {
       socket.close();
     };
-  }, [handleUpdateMessageOptions]);
+  }, [handlePlayNotification, handleUpdateMessageOptions, me.id]);
 
   function handleCloseChat() {
     setActivePage("main");
@@ -155,11 +163,6 @@ export default function Chat({
   function handleSendMessage(message: MessageOptionsResponseBody) {
     if (ws !== null && ws.OPEN) {
       ws.send(JSON.stringify({ chat_id: activeChat?.id, face: message.face }));
-      ws.onmessage = (e) => {
-        setMessages((m) => [...m, JSON.parse(JSON.parse(e.data))]);
-        bottomRef.current?.scrollIntoView();
-        handleUpdateMessageOptions();
-      };
     }
   }
 
