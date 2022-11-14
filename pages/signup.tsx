@@ -33,7 +33,11 @@ export default function SignUp() {
         router.push("/signin");
       })
       .catch((err) => {
-        setErrorText("An error occurred. Please try again.");
+        if (err?.response?.status === 409) {
+          setErrorText("Username or email already exists.");
+        } else {
+          setErrorText("An error occurred. Please try again.");
+        }
         setShowError(true);
         console.log(err);
       });
