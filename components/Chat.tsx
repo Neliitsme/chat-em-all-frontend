@@ -1,11 +1,10 @@
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { HiArrowLeft, HiArrowUp } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 import Image from "next/image";
 import {
   Dispatch,
-  MutableRefObject,
   SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -50,22 +49,24 @@ export default function Chat({
   const [messageOptions, setMessageOptions] = useState<
     MessageOptionsResponseBody[]
   >([]);
-  const cookies = new Cookies();
-
+  const [ws, setWs] = useState<WebSocket | null>(null);
   const bottomRef = useRef<null | HTMLDivElement>(null);
+
   useEffect(() => {
-    const hookCookies = new Cookies();
+    const cookies = new Cookies();
+
     axios
       .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_history`, {
         params: {
           chat_id: activeChat?.id,
         },
         headers: {
-          Authorization: `Bearer ${hookCookies.get("access_token")}`,
+          Authorization: `Bearer ${cookies.get("access_token")}`,
         },
       })
       .then((res) => {
         setMessages(res.data);
+        bottomRef.current?.scrollIntoView();
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
@@ -75,26 +76,6 @@ export default function Chat({
         console.log(err);
       });
 
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_options`, {
-        params: { chat_id: activeChat?.id },
-        headers: {
-          Authorization: `Bearer ${hookCookies.get("access_token")}`,
-        },
-      })
-      .then((res) => {
-        setMessageOptions(res.data);
-      })
-      .catch((err) => {
-        if (err?.response?.status === 401) {
-          removeCookies();
-          router.push("/signin");
-        }
-        console.log(err);
-      });
-  }, [activeChat?.id, router]);
-
-  function handleUpdateMessageOptions() {
     axios
       .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_options`, {
         params: { chat_id: activeChat?.id },
@@ -112,7 +93,53 @@ export default function Chat({
         }
         console.log(err);
       });
-  }
+  }, [activeChat?.id, router]);
+
+  const handleUpdateMessageOptions = useCallback(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_options`, {
+        params: { chat_id: activeChat?.id },
+        headers: {
+          Authorization: `Bearer ${new Cookies().get("access_token")}`,
+        },
+      })
+      .then((res) => {
+        setMessageOptions(res.data);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          removeCookies();
+          router.push("/signin");
+        }
+        console.log(err);
+      });
+  }, [activeChat?.id, router]);
+
+  useEffect(() => {
+    const socket = new WebSocket(
+      `wss://${process.env.NEXT_PUBLIC_API_HOSTNAME}/api/ws/${new Cookies().get(
+        "access_token"
+      )}`
+    );
+    socket.onopen = () => {
+      console.log("Connected to websocket");
+    };
+
+    socket.onmessage = (e) => {
+      setMessages((m) => [...m, JSON.parse(JSON.parse(e.data))]);
+      const audio = new Audio("/message-notification.m4a");
+      audio.volume = 0.4;
+      audio.play();
+      bottomRef.current?.scrollIntoView();
+      handleUpdateMessageOptions();
+    };
+
+    setWs(socket);
+
+    return () => {
+      socket.close();
+    };
+  }, [handleUpdateMessageOptions]);
 
   function handleCloseChat() {
     setActivePage("main");
@@ -126,31 +153,14 @@ export default function Chat({
   }
 
   function handleSendMessage(message: MessageOptionsResponseBody) {
-    axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/chats/send_message`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${cookies.get("access_token")}`,
-          },
-          params: {
-            chat_id: activeChat?.id,
-            face: message.face,
-          },
-        }
-      )
-      .then((res) => {
-        setMessages([...messages, res.data]);
+    if (ws !== null && ws.OPEN) {
+      ws.send(JSON.stringify({ chat_id: activeChat?.id, face: message.face }));
+      ws.onmessage = (e) => {
+        setMessages((m) => [...m, JSON.parse(JSON.parse(e.data))]);
+        bottomRef.current?.scrollIntoView();
         handleUpdateMessageOptions();
-      })
-      .catch((err) => {
-        if (err?.response?.status === 401) {
-          removeCookies();
-          router.push("/signin");
-        }
-        console.log(err);
-      });
+      };
+    }
   }
 
   function displayMessageOptions() {
