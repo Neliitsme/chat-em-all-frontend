@@ -4,13 +4,14 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import { HiArrowUp } from "react-icons/hi";
 import Image from "next/image";
 import SearchBar from "./SearchBar";
-import { ChatPreviewBody, FoundUser } from "../pages";
 import { Dispatch, SetStateAction } from "react";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { resolveSoa } from "dns";
 import removeCookies from "../utils/removeCookies";
 import { useRouter } from "next/router";
+import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
+import { FoundUser } from "../interfaces/FoundUser";
 
 interface SearchProps {
   foundUser: FoundUser[];

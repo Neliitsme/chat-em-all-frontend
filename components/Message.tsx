@@ -1,4 +1,4 @@
-import { Me } from "../pages";
+import { Me } from "../interfaces/Me";
 
 interface MessageProps {
   props: {

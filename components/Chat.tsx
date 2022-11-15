@@ -11,18 +11,14 @@ import {
 } from "react";
 import MessageOption from "./MessageOption";
 import Message from "./Message";
-import { ChatPreviewBody, Me } from "../pages";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
 import removeCookies from "../utils/removeCookies";
-
-export interface ChatMessageResponseBody {
-  id: string;
-  text: string;
-  owner_id: string;
-  created: string;
-}
+import { ChatMessageResponseBody } from "../interfaces/ChatMessageResponseBody";
+import { MessageOptionsResponseBody } from "../interfaces/MessageOptionsResponseBody";
+import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
+import { Me } from "../interfaces/Me";
 
 interface ChatProps {
   activeChat: ChatPreviewBody | null;
@@ -30,11 +26,6 @@ interface ChatProps {
   activePage: string;
   setActivePage: Dispatch<SetStateAction<string>>;
   me: Me;
-}
-
-interface MessageOptionsResponseBody {
-  face: string;
-  text: string;
 }
 
 export default function Chat({
@@ -119,7 +110,6 @@ export default function Chat({
     const audio = new Audio("/message-notification.m4a");
     audio.volume = 0.4;
     audio.play();
-    console.log("playing sound");
   }, []);
 
   useEffect(() => {
@@ -134,6 +124,9 @@ export default function Chat({
 
     socket.onmessage = (e) => {
       const data: ChatMessageResponseBody = JSON.parse(JSON.parse(e.data));
+      if (data.chat_id !== activeChat?.id) {
+        return;
+      }
       if (data.owner_id !== me.id) {
         handlePlayNotification();
       }
@@ -147,7 +140,12 @@ export default function Chat({
     return () => {
       socket.close();
     };
-  }, [handlePlayNotification, handleUpdateMessageOptions, me.id]);
+  }, [
+    activeChat?.id,
+    handlePlayNotification,
+    handleUpdateMessageOptions,
+    me.id,
+  ]);
 
   function handleCloseChat() {
     setActivePage("main");

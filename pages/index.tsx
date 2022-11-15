@@ -7,33 +7,10 @@ import { useEffect, useState } from "react";
 import Search from "../components/Search";
 import Chat from "../components/Chat";
 import removeCookies from "../utils/removeCookies";
-
-interface ChatPreviewResponseBody {
-  id: string;
-  name: string;
-  users_ids: string[];
-  messages: [{ text: string; owner_id: string }];
-}
-
-export interface ChatPreviewBody {
-  id: string;
-  avatar: string;
-  username: string;
-  user_id: string;
-  latestMessage: string;
-}
-
-export interface FoundUser {
-  id: string;
-  username: string;
-  email: string;
-}
-
-export interface Me {
-  id: string;
-  username: string;
-  email: string;
-}
+import { Me } from "../interfaces/Me";
+import { FoundUser } from "../interfaces/FoundUser";
+import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
+import { ChatPreviewResponseBody } from "../interfaces/ChatPreviewResponseBody";
 
 export default function Home() {
   const router = useRouter();
