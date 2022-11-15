@@ -5,6 +5,8 @@ import PillButton from "../components/PillButton";
 import axios from "axios";
 import { useState } from "react";
 import ErrorBadge from "../components/ErrorBadge";
+import setCookies from "../utils/setCookies";
+import querystring from "querystring";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -30,7 +32,18 @@ export default function SignUp() {
         }
       )
       .then((res) => {
-        router.push("/signin");
+        axios
+          .post(
+            `${process.env.NEXT_PUBLIC_API_HOST}/api/users/token`,
+            querystring.stringify({
+              username: username.trim(),
+              password: password,
+            })
+          )
+          .then((res) => {
+            setCookies(res.data);
+            router.push("/");
+          });
       })
       .catch((err) => {
         if (err?.response?.status === 409) {

@@ -6,7 +6,6 @@ import { useState } from "react";
 import ErrorBadge from "../components/ErrorBadge";
 import axios from "axios";
 import querystring from "querystring";
-import Cookies from "universal-cookie";
 import setCookies from "../utils/setCookies";
 
 export default function SignIn() {
@@ -19,8 +18,6 @@ export default function SignIn() {
   function handleSignIn() {
     setShowError(false);
     setErrorText("undefined");
-    const cookies = new Cookies();
-    cookies.remove("access_token");
 
     if (!username.trim() || !password) {
       setErrorText("Please enter a username and password.");
