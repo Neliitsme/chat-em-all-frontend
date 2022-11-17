@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HiArrowLeft } from "react-icons/hi";
+import { IoIosArrowDown } from "react-icons/io";
 import Image from "next/image";
 import {
   Dispatch,
@@ -41,11 +42,12 @@ export default function Chat({
     MessageOptionsResponseBody[]
   >([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
-  const bottomRef = useRef<null | HTMLDivElement>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const messageListBottomRef = useRef<null | HTMLDivElement>(null);
+  const messageListRef = useRef<null | HTMLUListElement>(null);
 
   useEffect(() => {
     const cookies = new Cookies();
-
     axios
       .get(`${process.env.NEXT_PUBLIC_API_HOST}/api/chats/get_history`, {
         params: {
@@ -57,7 +59,7 @@ export default function Chat({
       })
       .then((res) => {
         setMessages(res.data);
-        bottomRef.current?.scrollIntoView();
+        messageListBottomRef.current?.scrollIntoView();
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
@@ -112,6 +114,12 @@ export default function Chat({
     audio.play();
   }, []);
 
+  const handleScrollToBottom = useCallback(() => {
+    messageListBottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, []);
+
   useEffect(() => {
     const socket = new WebSocket(
       `wss://${process.env.NEXT_PUBLIC_API_HOSTNAME}/api/ws/${new Cookies().get(
@@ -131,8 +139,8 @@ export default function Chat({
         handlePlayNotification();
       }
       setMessages((m) => [...m, data]);
-      bottomRef.current?.scrollIntoView();
       handleUpdateMessageOptions();
+      handleScrollToBottom();
     };
 
     setWs(socket);
@@ -143,9 +151,27 @@ export default function Chat({
   }, [
     activeChat?.id,
     handlePlayNotification,
+    handleScrollToBottom,
     handleUpdateMessageOptions,
     me.id,
   ]);
+
+  useEffect(() => {
+    messageListRef.current?.addEventListener("scroll", () => {
+      const scrollHeight = messageListRef.current?.scrollHeight;
+      const scrollTop = messageListRef.current?.scrollTop;
+      const clientHeight = messageListRef.current?.clientHeight;
+      if (!scrollHeight || !scrollTop || !clientHeight) {
+        return;
+      }
+
+      if (scrollHeight - scrollTop > clientHeight * 2) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    });
+  });
 
   function handleCloseChat() {
     setActivePage("main");
@@ -210,14 +236,30 @@ export default function Chat({
       </div>
 
       <div className="h-screen w-screen flex items-end pt-16 overflow-clip">
-        <ul className="h-full w-screen flex flex-col last:pb-48 overflow-auto">
+        <ul
+          className="h-full w-screen flex flex-col last:pb-48 overflow-auto"
+          ref={messageListRef}
+        >
           {displayMessages()}
-          <div ref={bottomRef} />
+          <div ref={messageListBottomRef} />
         </ul>
       </div>
+      <div className="flex flex-col fixed bottom-0 inset-x-0 z-10">
+        {showScrollButton && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleScrollToBottom();
+            }}
+            className="flex bg-zinc-800 text-white rounded-full p-2 m-2 drop-shadow-md w-fit justify-center border-2 border-amber-400 place-self-end"
+          >
+            <IoIosArrowDown size={24} />
+          </button>
+        )}
 
-      <div className="flex fixed bottom-0 inset-x-0 max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll z-10">
-        {displayMessageOptions()}
+        <div className="flex max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll">
+          {displayMessageOptions()}
+        </div>
       </div>
     </div>
   );
