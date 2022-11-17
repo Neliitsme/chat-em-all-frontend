@@ -216,7 +216,7 @@ export default function Chat({
         </ul>
       </div>
 
-      <div className="flex fixed bottom-0 inset-x-0 h-48 gap-4 px-2 py-2 items-end overflow-x-scroll z-10">
+      <div className="flex fixed bottom-0 inset-x-0 max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll z-10">
         {displayMessageOptions()}
       </div>
 
