@@ -219,19 +219,6 @@ export default function Chat({
       <div className="flex fixed bottom-0 inset-x-0 max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll z-10">
         {displayMessageOptions()}
       </div>
-
-      {/* <form className="flex p-2 py-4 bg-zinc-800 fixed bottom-0 inset-x-0 z-10">
-        <input
-          type="text"
-          placeholder="Message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="w-full h-12 px-4 mr-4 rounded-full bg-zinc-500"
-        />
-        <button className="px-3 rounded-full bg-amber-400">
-          <HiArrowUp size={24} className="text-zinc-800" />
-        </button>
-      </form> */}
     </div>
   );
 }
