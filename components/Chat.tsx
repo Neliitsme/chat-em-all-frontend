@@ -20,6 +20,7 @@ import { ChatMessageResponseBody } from "../interfaces/ChatMessageResponseBody";
 import { MessageOptionsResponseBody } from "../interfaces/MessageOptionsResponseBody";
 import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
 import { Me } from "../interfaces/Me";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ChatProps {
   activeChat: ChatPreviewBody | null;
@@ -212,7 +213,14 @@ export default function Chat({
   }
 
   return (
-    <div>
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{
+        stiffness: "100%",
+      }}
+    >
       <div className="fixed p-2 top-0 inset-x-0 bg-zinc-800 z-10 drop-shadow-md">
         <div className="flex h-12">
           <a
@@ -245,22 +253,34 @@ export default function Chat({
         </ul>
       </div>
       <div className="flex flex-col fixed bottom-0 inset-x-0 z-10">
-        {showScrollButton && (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              handleScrollToBottom();
-            }}
-            className="flex bg-zinc-800 text-white rounded-full p-2 m-2 drop-shadow-md w-fit justify-center border-2 border-amber-400 place-self-end"
-          >
-            <IoIosArrowDown size={24} />
-          </button>
-        )}
+        <AnimatePresence>
+          {showScrollButton && (
+            <motion.button
+              key={"scroll-button"}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleScrollToBottom();
+              }}
+              className="flex bg-zinc-800 text-white rounded-full p-2 m-2 drop-shadow-md w-fit justify-center border-2 border-amber-400 place-self-end"
+            >
+              <IoIosArrowDown size={24} />
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <div className="flex max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll">
           {displayMessageOptions()}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

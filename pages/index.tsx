@@ -11,6 +11,7 @@ import { Me } from "../interfaces/Me";
 import { FoundUser } from "../interfaces/FoundUser";
 import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
 import { ChatPreviewResponseBody } from "../interfaces/ChatPreviewResponseBody";
+import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
@@ -92,9 +93,10 @@ export default function Home() {
   }
 
   return (
-    <>
+    <AnimatePresence>
       {(activePage === "main" || activePage === "search") && (
         <SearchBar
+          key={"search-bar"}
           activePage={activePage}
           setActivePage={setActivePage}
           foundUser={foundUser}
@@ -102,10 +104,13 @@ export default function Home() {
         />
       )}
       {activePage === "main" && (
-        <ul className="h-screen flex-col">{displayChats()}</ul>
+        <ul key={"main"} className="h-screen flex-col">
+          {displayChats()}
+        </ul>
       )}
       {activePage === "search" && (
         <Search
+          key={"search"}
           foundUser={foundUser}
           setFoundUser={setFoundUser}
           activePage={activePage}
@@ -116,6 +121,7 @@ export default function Home() {
       )}
       {activePage === "chat" && (
         <Chat
+          key={"chat"}
           activeChat={activeChat}
           setActiveChat={setActiveChat}
           activePage={activePage}
@@ -123,6 +129,6 @@ export default function Home() {
           me={me}
         />
       )}
-    </>
+    </AnimatePresence>
   );
 }

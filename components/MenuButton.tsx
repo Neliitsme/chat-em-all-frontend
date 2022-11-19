@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { HiMenu } from "react-icons/hi";
 import NavMenu from "./NavMenu";
@@ -10,7 +11,9 @@ export default function MenuButtons() {
       <button onClick={() => setIsOpen(!isOpen)} className="">
         <HiMenu size={24} className="" />
       </button>
-      {isOpen && <NavMenu />}
+      <AnimatePresence>
+        {isOpen && <NavMenu key={"nav-menu"} />}
+      </AnimatePresence>
     </div>
   );
 }
