@@ -8,8 +8,8 @@ import ReturnButton from "./ReturnButton";
 import MenuButton from "./MenuButton";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { FoundUser } from "../pages";
 import removeCookies from "../utils/removeCookies";
+import { FoundUser } from "../interfaces/FoundUser";
 
 interface SearchBarProps {
   activePage: string;

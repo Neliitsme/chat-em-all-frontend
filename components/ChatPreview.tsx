@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChatPreviewBody } from "../pages";
+import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
 
 interface ChatPreviewProps {
   chatPreviewBody: ChatPreviewBody;
