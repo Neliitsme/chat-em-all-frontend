@@ -11,9 +11,7 @@ export default function MenuButtons() {
       <button onClick={() => setIsOpen(!isOpen)} className="">
         <HiMenu size={24} className="" />
       </button>
-      <AnimatePresence>
-        {isOpen && <NavMenu key={"nav-menu"} />}
-      </AnimatePresence>
+      {isOpen && <NavMenu key={"nav-menu"} />}
     </div>
   );
 }
