@@ -213,7 +213,7 @@ export default function Chat({
   }
 
   return (
-    <div>
+    <div id="chat">
       <div className="fixed p-2 top-0 inset-x-0 bg-zinc-800 z-10 drop-shadow-md">
         <div className="flex h-12">
           <a
@@ -236,7 +236,10 @@ export default function Chat({
         </div>
       </div>
 
-      <div className="h-screen w-screen flex items-end pt-16 overflow-clip">
+      <div
+        id="chat-messages"
+        className="h-screen w-screen flex items-end pt-16 overflow-clip"
+      >
         <ul
           className="h-full w-screen flex flex-col last:pb-48 overflow-auto"
           ref={messageListRef}
@@ -270,9 +273,12 @@ export default function Chat({
           )}
         </AnimatePresence>
 
-        <div className="flex max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll">
+        <ul
+          id="chat-message-options"
+          className="flex max-h-48 gap-4 px-2 py-2 items-end overflow-x-scroll"
+        >
           {displayMessageOptions()}
-        </div>
+        </ul>
       </div>
     </div>
   );

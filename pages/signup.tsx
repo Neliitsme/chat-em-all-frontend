@@ -19,6 +19,13 @@ export default function SignUp() {
   function handleSignUp() {
     setShowError(false);
     setErrorText("undefined");
+
+    if (!username.trim() || !password || !email.trim()) {
+      setErrorText("Please fill the form.");
+      setShowError(true);
+      return;
+    }
+
     axios
       .post(
         `${process.env.NEXT_PUBLIC_API_HOST}/api/users/register`,

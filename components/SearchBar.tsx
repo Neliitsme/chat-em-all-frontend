@@ -64,7 +64,10 @@ export default function SearchBar({
   }
 
   return (
-    <div className="flex mb-4 mx-4 py-3 bg-zinc-800 rounded-2xl fixed bottom-0 inset-x-0 z-10 border-amber-400 border-2 drop-shadow-md">
+    <div
+      id="search-bar"
+      className="flex mb-4 mx-4 py-3 bg-zinc-800 rounded-2xl fixed bottom-0 inset-x-0 z-10 border-amber-400 border-2 drop-shadow-md"
+    >
       {isSearching ? (
         <ReturnButton
           goBack={() => {

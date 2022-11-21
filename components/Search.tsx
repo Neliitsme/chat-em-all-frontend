@@ -65,9 +65,9 @@ export default function Search({
   }
 
   return (
-    <>
-      {foundUser.length > 0 ? (
-        <>
+    <div id="search">
+      <ul>
+        {foundUser.length > 0 ? (
           <a
             href="#"
             onClick={(e) => {
@@ -92,10 +92,10 @@ export default function Search({
               </div>
             </div>
           </a>
-        </>
-      ) : (
-        <></>
-      )}
-    </>
+        ) : (
+          <></>
+        )}
+      </ul>
+    </div>
   );
 }

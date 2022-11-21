@@ -94,7 +94,9 @@ export default function Home() {
   return (
     <>
       {activePage === "main" && (
-        <ul className="h-screen flex-col">{displayChats()}</ul>
+        <ul id="main" className="h-screen flex-col">
+          {displayChats()}
+        </ul>
       )}
       {activePage === "search" && (
         <Search
