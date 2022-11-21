@@ -166,7 +166,7 @@ export default function Chat({
         return;
       }
 
-      if (scrollHeight - scrollTop > clientHeight * 2) {
+      if (scrollHeight - scrollTop > clientHeight * 1.5) {
         setShowScrollButton(true);
       } else {
         setShowScrollButton(false);
@@ -213,14 +213,7 @@ export default function Chat({
   }
 
   return (
-    <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{
-        stiffness: "100%",
-      }}
-    >
+    <div>
       <div className="fixed p-2 top-0 inset-x-0 bg-zinc-800 z-10 drop-shadow-md">
         <div className="flex h-12">
           <a
@@ -281,6 +274,6 @@ export default function Chat({
           {displayMessageOptions()}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

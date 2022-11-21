@@ -8,10 +8,15 @@ export default function MenuButtons() {
 
   return (
     <div className="pt-3 px-4">
-      <button onClick={() => setIsOpen(!isOpen)} className="">
-        <HiMenu size={24} className="" />
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <HiMenu size={24} />
       </button>
-      {isOpen && <NavMenu key={"nav-menu"} />}
+      {isOpen && <NavMenu />}
     </div>
   );
 }

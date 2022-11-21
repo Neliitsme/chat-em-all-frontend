@@ -11,12 +11,11 @@ import { Me } from "../interfaces/Me";
 import { FoundUser } from "../interfaces/FoundUser";
 import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
 import { ChatPreviewResponseBody } from "../interfaces/ChatPreviewResponseBody";
-import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
   const [chatPreviews, setChatPreviews] = useState<ChatPreviewBody[]>([]);
-  const [activePage, setActivePage] = useState("main"); // main, search, chat, settings
+  const [activePage, setActivePage] = useState("main"); // main, search, chat
   const [foundUser, setFoundUser] = useState<FoundUser[]>([]);
   const [activeChat, setActiveChat] = useState<ChatPreviewBody | null>(null);
   const [me, setMe] = useState<Me>({ id: "", username: "", email: "" });
@@ -93,24 +92,12 @@ export default function Home() {
   }
 
   return (
-    <AnimatePresence>
-      {(activePage === "main" || activePage === "search") && (
-        <SearchBar
-          key={"search-bar"}
-          activePage={activePage}
-          setActivePage={setActivePage}
-          foundUser={foundUser}
-          setFoundUser={setFoundUser}
-        />
-      )}
+    <>
       {activePage === "main" && (
-        <ul key={"main"} className="h-screen flex-col">
-          {displayChats()}
-        </ul>
+        <ul className="h-screen flex-col">{displayChats()}</ul>
       )}
       {activePage === "search" && (
         <Search
-          key={"search"}
           foundUser={foundUser}
           setFoundUser={setFoundUser}
           activePage={activePage}
@@ -119,9 +106,16 @@ export default function Home() {
           setActiveChat={setActiveChat}
         />
       )}
+      {(activePage === "main" || activePage === "search") && (
+        <SearchBar
+          activePage={activePage}
+          setActivePage={setActivePage}
+          foundUser={foundUser}
+          setFoundUser={setFoundUser}
+        />
+      )}
       {activePage === "chat" && (
         <Chat
-          key={"chat"}
           activeChat={activeChat}
           setActiveChat={setActiveChat}
           activePage={activePage}
@@ -129,6 +123,6 @@ export default function Home() {
           me={me}
         />
       )}
-    </AnimatePresence>
+    </>
   );
 }
