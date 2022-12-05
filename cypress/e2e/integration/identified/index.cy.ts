@@ -132,3 +132,4 @@ describe("identified user app actions", () => {
     cy.getCookie("access_token").should("not.exist");
   });
 });
+export {}

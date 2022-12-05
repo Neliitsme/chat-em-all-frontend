@@ -44,3 +44,4 @@ describe("signin", () => {
     cy.getCookie("access_token").should("exist");
   });
 });
+export {}

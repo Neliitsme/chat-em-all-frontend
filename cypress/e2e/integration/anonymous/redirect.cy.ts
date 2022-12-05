@@ -4,3 +4,4 @@ describe("redirect", () => {
     cy.url().should("include", "/signin");
   });
 });
+export {}

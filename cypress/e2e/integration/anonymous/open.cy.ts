@@ -3,3 +3,4 @@ describe("open app", () => {
     cy.visit("/signin");
   });
 });
+export {}
