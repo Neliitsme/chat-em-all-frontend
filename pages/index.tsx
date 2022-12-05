@@ -3,7 +3,7 @@ import SearchBar from "../components/SearchBar";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Search from "../components/Search";
 import Chat from "../components/Chat";
 import removeCookies from "../utils/removeCookies";
@@ -11,6 +11,7 @@ import { Me } from "../interfaces/Me";
 import { FoundUser } from "../interfaces/FoundUser";
 import { ChatPreviewBody } from "../interfaces/ChatPreviewBody";
 import { ChatPreviewResponseBody } from "../interfaces/ChatPreviewResponseBody";
+import { ChatMessageResponseBody } from "../interfaces/ChatMessageResponseBody";
 
 export default function Home() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function Home() {
   const [foundUser, setFoundUser] = useState<FoundUser[]>([]);
   const [activeChat, setActiveChat] = useState<ChatPreviewBody | null>(null);
   const [me, setMe] = useState<Me>({ id: "", username: "", email: "" });
+  const [ws, setWs] = useState<WebSocket | null>(null);
 
   useEffect(() => {
     const cookies = new Cookies();
@@ -68,6 +70,40 @@ export default function Home() {
         console.log(err);
       });
   }, [router]);
+
+  const handlePlayNotificationSound = useCallback(() => {
+    const audio = new Audio("/message-notification.m4a");
+    audio.volume = 0.4;
+    audio.play();
+  }, []);
+
+  useEffect(() => {
+    const socket = new WebSocket(
+      `wss://${process.env.NEXT_PUBLIC_API_HOSTNAME}/api/ws/${new Cookies().get(
+        "access_token"
+      )}`
+    );
+    socket.onopen = () => {
+      console.log("Connected to websocket");
+    };
+
+    socket.onmessage = (e) => {
+      const data: ChatMessageResponseBody = JSON.parse(JSON.parse(e.data));
+      const chatPreviewsClone = [...chatPreviews];
+      chatPreviewsClone[
+        chatPreviewsClone.findIndex((chat) => chat.id === data.chat_id)
+      ].latestMessage = data.text;
+      setChatPreviews(() => [...chatPreviewsClone]);
+      handlePlayNotificationSound();
+    };
+
+    setWs(socket);
+
+    return () => {
+      socket.close();
+      console.log("disconnected");
+    };
+  }, [activeChat?.id, chatPreviews, handlePlayNotificationSound, me.id]);
 
   function handleOpenChat(chatPreview: ChatPreviewBody) {
     setActiveChat(chatPreview);
@@ -122,6 +158,7 @@ export default function Home() {
           setActiveChat={setActiveChat}
           activePage={activePage}
           setActivePage={setActivePage}
+          handlePlayNotificationSound={handlePlayNotificationSound}
           me={me}
         />
       )}

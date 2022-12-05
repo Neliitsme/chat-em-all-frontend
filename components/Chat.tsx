@@ -28,6 +28,7 @@ interface ChatProps {
   activePage: string;
   setActivePage: Dispatch<SetStateAction<string>>;
   me: Me;
+  handlePlayNotificationSound: () => void;
 }
 
 export default function Chat({
@@ -36,6 +37,7 @@ export default function Chat({
   activePage,
   setActivePage,
   me,
+  handlePlayNotificationSound,
 }: ChatProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessageResponseBody[]>([]);
@@ -109,12 +111,6 @@ export default function Chat({
       });
   }, [activeChat?.id, router]);
 
-  const handlePlayNotification = useCallback(() => {
-    const audio = new Audio("/message-notification.m4a");
-    audio.volume = 0.4;
-    audio.play();
-  }, []);
-
   const handleScrollToBottom = useCallback(() => {
     messageListBottomRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -137,7 +133,7 @@ export default function Chat({
         return;
       }
       if (data.owner_id !== me.id) {
-        handlePlayNotification();
+        handlePlayNotificationSound();
       }
       setMessages((m) => [...m, data]);
       handleUpdateMessageOptions();
@@ -148,10 +144,11 @@ export default function Chat({
 
     return () => {
       socket.close();
+      console.log('disconnected');
     };
   }, [
     activeChat?.id,
-    handlePlayNotification,
+    handlePlayNotificationSound,
     handleScrollToBottom,
     handleUpdateMessageOptions,
     me.id,
